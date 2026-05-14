@@ -252,18 +252,17 @@ export function SquadDetailPage() {
       )}
 
       {/* Squad-scoped create flow: same dialog as the Agents page but
-          with squadId set, so the dialog runs addSquadMember after
-          createAgent / createAgentFromTemplate and skips the
-          agent-detail navigation. Only mounted for workspace
-          owner/admin since AddSquadMember is owner/admin-gated
-          server-side; for everyone else the trigger never renders. */}
+          with squadId set, so the dialog runs api.addSquadMember after
+          api.createAgent and skips the agent-detail navigation. Only
+          mounted for workspace owner/admin since AddSquadMember is
+          owner/admin-gated server-side; for everyone else the trigger
+          never renders. */}
       {showCreateAgent && isWorkspaceAdmin && (
         <CreateAgentDialog
           runtimes={runtimes}
           runtimesLoading={runtimesLoading}
           members={wsMembers}
           currentUserId={currentUser?.id ?? null}
-          existingAgentNames={agents.map((a: Agent) => a.name)}
           squadId={squadId}
           onClose={() => setShowCreateAgent(false)}
           onCreate={handleCreateAgent}
@@ -1072,7 +1071,14 @@ function SquadMembersTab({
       <div className="space-y-2">
         {members.map((m) => (
           <div key={m.id} className="group flex items-start gap-3 rounded-lg border p-3">
-            <ActorAvatar actorType={m.member_type} actorId={m.member_id} size={32} showStatusDot />
+            <ActorAvatar
+              actorType={m.member_type}
+              actorId={m.member_id}
+              size={32}
+              showStatusDot
+              enableHoverCard={m.member_type === "agent"}
+              hoverCardVariant="live"
+            />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium">{getEntityName(m.member_type, m.member_id)}</span>
