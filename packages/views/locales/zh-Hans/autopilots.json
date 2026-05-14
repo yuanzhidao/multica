@@ -90,6 +90,7 @@
   "run_status": {
     "issue_created": "已创建 issue",
     "running": "运行中",
+    "skipped": "已跳过",
     "completed": "已完成",
     "failed": "失败"
   },
@@ -147,9 +148,14 @@
     "section_agent": "智能体",
     "select_agent": "选择智能体",
     "section_output_mode": "输出模式",
+    "section_overlap": "重叠运行",
     "section_schedule": "时间表",
     "schedule_disabled_reason": "该自动化有多个时间表——请到详情页编辑。",
     "next_run_label": "下次运行：",
+    "skip_if_running": {
+      "label": "运行中则跳过",
+      "description": "已有运行时，不再启动新的运行"
+    },
     "output_modes": {
       "create_issue": {
         "label": "创建 issue",
