@@ -53,6 +53,7 @@ import { ChevronDown, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import type { Squad, SquadMember, Agent, CreateAgentRequest, MemberWithUser } from "@multica/core/types";
 import { useT } from "../../i18n";
+import { matchesPinyin } from "../../editor/extensions/pinyin-match";
 
 export function SquadDetailPage() {
   const { t } = useT("squads");
@@ -509,8 +510,8 @@ function AddMemberDialog({
   const [submitting, setSubmitting] = useState(false);
 
   const query = pickerFilter.trim().toLowerCase();
-  const filteredMembers = availableMembers.filter((m) => m.name.toLowerCase().includes(query));
-  const filteredAgents = availableAgents.filter((a) => a.name.toLowerCase().includes(query));
+  const filteredMembers = availableMembers.filter((m) => m.name.toLowerCase().includes(query) || matchesPinyin(m.name, query));
+  const filteredAgents = availableAgents.filter((a) => a.name.toLowerCase().includes(query) || matchesPinyin(a.name, query));
 
   const canSubmit = !!target && !submitting;
 
@@ -968,7 +969,7 @@ function SquadOverviewPane({
 
       <div className="flex-1 min-h-0 overflow-y-auto">
         {activeTab === "members" && (
-          <div className="mx-auto flex h-full max-w-2xl flex-col p-4 md:p-6">
+          <div className="flex h-full flex-col p-4 md:p-6">
             <SquadMembersTab
               members={members}
               isLeader={isLeader}
@@ -983,7 +984,7 @@ function SquadOverviewPane({
           </div>
         )}
         {activeTab === "instructions" && (
-          <div className="mx-auto flex h-full max-w-2xl flex-col p-4 md:p-6">
+          <div className="flex h-full flex-col p-4 md:p-6">
             <SquadInstructionsTab
               squad={squad}
               onSave={onSaveInstructions}
