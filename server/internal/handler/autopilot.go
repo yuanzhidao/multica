@@ -30,6 +30,7 @@ type AutopilotResponse struct {
 	Status             string  `json:"status"`
 	ExecutionMode      string  `json:"execution_mode"`
 	IssueTitleTemplate *string `json:"issue_title_template"`
+	SkipIfRunning      bool    `json:"skip_if_running"`
 	CreatedByType      string  `json:"created_by_type"`
 	CreatedByID        string  `json:"created_by_id"`
 	LastRunAt          *string `json:"last_run_at"`
@@ -80,6 +81,7 @@ func autopilotToResponse(a db.Autopilot) AutopilotResponse {
 		Status:             a.Status,
 		ExecutionMode:      a.ExecutionMode,
 		IssueTitleTemplate: textToPtr(a.IssueTitleTemplate),
+		SkipIfRunning:      a.SkipIfRunning,
 		CreatedByType:      a.CreatedByType,
 		CreatedByID:        uuidToString(a.CreatedByID),
 		LastRunAt:          timestampToPtr(a.LastRunAt),
@@ -139,6 +141,7 @@ type CreateAutopilotRequest struct {
 	AssigneeID         string  `json:"assignee_id"`
 	ExecutionMode      string  `json:"execution_mode"`
 	IssueTitleTemplate *string `json:"issue_title_template"`
+	SkipIfRunning      *bool   `json:"skip_if_running"`
 }
 
 type UpdateAutopilotRequest struct {
@@ -148,6 +151,7 @@ type UpdateAutopilotRequest struct {
 	Status             *string `json:"status"`
 	ExecutionMode      *string `json:"execution_mode"`
 	IssueTitleTemplate *string `json:"issue_title_template"`
+	SkipIfRunning      *bool   `json:"skip_if_running"`
 }
 
 type CreateAutopilotTriggerRequest struct {
@@ -286,12 +290,18 @@ func (h *Handler) CreateAutopilot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	skipIfRunning := true
+	if req.SkipIfRunning != nil {
+		skipIfRunning = *req.SkipIfRunning
+	}
+
 	autopilot, err := h.Queries.CreateAutopilot(r.Context(), db.CreateAutopilotParams{
 		WorkspaceID:        wsUUID,
 		Title:              req.Title,
 		AssigneeID:         assigneeUUID,
 		Status:             "active",
 		ExecutionMode:      req.ExecutionMode,
+		SkipIfRunning:      skipIfRunning,
 		CreatedByType:      "member",
 		CreatedByID:        parseUUID(userID),
 		Description:        ptrToText(req.Description),
@@ -348,6 +358,9 @@ func (h *Handler) UpdateAutopilot(w http.ResponseWriter, r *http.Request) {
 	}
 	if req.ExecutionMode != nil {
 		params.ExecutionMode = pgtype.Text{String: *req.ExecutionMode, Valid: true}
+	}
+	if req.SkipIfRunning != nil {
+		params.SkipIfRunning = pgtype.Bool{Bool: *req.SkipIfRunning, Valid: true}
 	}
 	if _, ok := rawFields["description"]; ok {
 		params.Description = ptrToText(req.Description)

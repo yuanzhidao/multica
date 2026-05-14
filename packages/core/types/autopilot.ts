@@ -4,7 +4,7 @@ export type AutopilotExecutionMode = "create_issue" | "run_only";
 
 export type AutopilotTriggerKind = "schedule" | "webhook" | "api";
 
-export type AutopilotRunStatus = "issue_created" | "running" | "completed" | "failed";
+export type AutopilotRunStatus = "issue_created" | "running" | "skipped" | "completed" | "failed";
 
 export type AutopilotRunSource = "schedule" | "manual" | "webhook" | "api";
 
@@ -17,6 +17,7 @@ export interface Autopilot {
   status: AutopilotStatus;
   execution_mode: AutopilotExecutionMode;
   issue_title_template: string | null;
+  skip_if_running: boolean;
   created_by_type: string;
   created_by_id: string;
   last_run_at: string | null;
@@ -61,6 +62,7 @@ export interface CreateAutopilotRequest {
   assignee_id: string;
   execution_mode: AutopilotExecutionMode;
   issue_title_template?: string;
+  skip_if_running?: boolean;
 }
 
 export interface UpdateAutopilotRequest {
@@ -70,6 +72,7 @@ export interface UpdateAutopilotRequest {
   status?: AutopilotStatus;
   execution_mode?: AutopilotExecutionMode;
   issue_title_template?: string | null;
+  skip_if_running?: boolean;
 }
 
 export interface CreateAutopilotTriggerRequest {

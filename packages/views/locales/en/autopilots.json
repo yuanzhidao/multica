@@ -90,6 +90,7 @@
   "run_status": {
     "issue_created": "Issue Created",
     "running": "Running",
+    "skipped": "Skipped",
     "completed": "Completed",
     "failed": "Failed"
   },
@@ -147,9 +148,14 @@
     "section_agent": "Agent",
     "select_agent": "Select agent",
     "section_output_mode": "Output mode",
+    "section_overlap": "Run overlap",
     "section_schedule": "Schedule",
     "schedule_disabled_reason": "This autopilot has multiple schedules — edit them in the detail page.",
     "next_run_label": "Next run:",
+    "skip_if_running": {
+      "label": "Skip if already running",
+      "description": "Avoid starting another run while one is active"
+    },
     "output_modes": {
       "create_issue": {
         "label": "Create issue",

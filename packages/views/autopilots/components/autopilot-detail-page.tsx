@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Zap, Play, Clock, Plus, Trash2, CheckCircle2, XCircle, Loader2, Pencil } from "lucide-react";
+import { Zap, Play, Clock, Plus, Trash2, CheckCircle2, XCircle, Loader2, Pencil, Ban } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { autopilotDetailOptions, autopilotRunsOptions } from "@multica/core/autopilots/queries";
 import {
@@ -59,11 +59,12 @@ function formatDate(date: string): string {
   });
 }
 
-type RunStatus = "issue_created" | "running" | "completed" | "failed";
+type RunStatus = "issue_created" | "running" | "skipped" | "completed" | "failed";
 
 const RUN_VISUAL: Record<RunStatus, { color: string; icon: typeof CheckCircle2; spin?: boolean }> = {
   issue_created: { color: "text-blue-500", icon: Clock },
   running: { color: "text-blue-500", icon: Loader2, spin: true },
+  skipped: { color: "text-muted-foreground", icon: Ban },
   completed: { color: "text-emerald-500", icon: CheckCircle2 },
   failed: { color: "text-destructive", icon: XCircle },
 };
@@ -538,6 +539,7 @@ export function AutopilotDetailPage({ autopilotId }: { autopilotId: string }) {
             description: autopilot.description ?? "",
             assignee_id: autopilot.assignee_id,
             execution_mode: autopilot.execution_mode as AutopilotExecutionMode,
+            skip_if_running: autopilot.skip_if_running,
           }}
           triggers={triggers}
         />

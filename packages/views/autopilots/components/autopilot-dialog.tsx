@@ -32,6 +32,7 @@ import {
   SelectItem,
 } from "@multica/ui/components/ui/select";
 import { TimeInput } from "@multica/ui/components/ui/time-input";
+import { Switch } from "@multica/ui/components/ui/switch";
 import { TimezonePicker } from "./pickers/timezone-picker";
 import { useCurrentWorkspace } from "@multica/core/paths";
 import { useWorkspaceId } from "@multica/core/hooks";
@@ -68,6 +69,7 @@ export interface AutopilotInitial {
   description: string;
   assignee_id: string;
   execution_mode: AutopilotExecutionMode;
+  skip_if_running: boolean;
 }
 
 export type AutopilotDialogProps =
@@ -250,6 +252,9 @@ export function AutopilotDialog(props: AutopilotDialogProps) {
   const [executionMode, setExecutionMode] = useState<AutopilotExecutionMode>(
     initial.execution_mode ?? "create_issue",
   );
+  const [skipIfRunning, setSkipIfRunning] = useState(
+    initial.skip_if_running ?? true,
+  );
 
   const initialCfg: TriggerConfig = (() => {
     if (isCreate) {
@@ -301,6 +306,7 @@ export function AutopilotDialog(props: AutopilotDialogProps) {
           description: description.trim() || undefined,
           assignee_id: assigneeId,
           execution_mode: executionMode,
+          skip_if_running: skipIfRunning,
         });
         let scheduleOk = true;
         try {
@@ -323,6 +329,7 @@ export function AutopilotDialog(props: AutopilotDialogProps) {
           description: description.trim() || null,
           assignee_id: assigneeId,
           execution_mode: executionMode,
+          skip_if_running: skipIfRunning,
         });
         let scheduleOk = true;
         if (scheduleDirty && !schedulePillDisabled) {
@@ -486,6 +493,8 @@ export function AutopilotDialog(props: AutopilotDialogProps) {
 
             <OutputModeSection mode={executionMode} onChange={setExecutionMode} />
 
+            <OverlapSection checked={skipIfRunning} onChange={setSkipIfRunning} />
+
             <ScheduleSection
               config={triggerConfig}
               onChange={setTriggerConfig}
@@ -646,6 +655,37 @@ function OutputModeSection({
             </button>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+function OverlapSection({
+  checked,
+  onChange,
+}: {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  const { t } = useT("autopilots");
+  return (
+    <div>
+      <SectionLabel>{t(($) => $.dialog.section_overlap)}</SectionLabel>
+      <div className="flex items-start justify-between gap-3 rounded-md border bg-background px-3 py-2">
+        <div className="min-w-0">
+          <div className="text-sm font-medium">
+            {t(($) => $.dialog.skip_if_running.label)}
+          </div>
+          <div className="text-xs text-muted-foreground">
+            {t(($) => $.dialog.skip_if_running.description)}
+          </div>
+        </div>
+        <Switch
+          className="mt-0.5"
+          checked={checked}
+          onCheckedChange={onChange}
+          aria-label={t(($) => $.dialog.skip_if_running.label)}
+        />
       </div>
     </div>
   );
